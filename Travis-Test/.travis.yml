@@ -35,9 +35,6 @@ android:
 notifications:
   email: true
 
-before_script:
-  - ./team-props/scripts/ci-mock-google-services-setup.sh
-
 script:
   - ./gradlew check -PdisablePreDex --continue --stacktrace
 
