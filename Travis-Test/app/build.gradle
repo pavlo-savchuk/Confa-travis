@@ -113,8 +113,6 @@ dependencies {
     compile(libraries.app.crashlytics) {
         transitive = true
     }
-    compile project(':drupalSDK')
     compile libraries.app.twitter
 }
 
-apply plugin: 'com.google.gms.google-services'
