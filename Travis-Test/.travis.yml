@@ -1,23 +1,43 @@
 language: android
+
 jdk: oraclejdk8
-env:
-  global:
-    - ANDROID_TARGET=android-15
-    - ANDROID_ABI=armeabi-v7a
+sudo: false
+os:
+  - linux
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.gradle/caches/3.1
+    - $HOME/.gradle/daemon
+    - $HOME/.gradle/native
+    - $HOME/.gradle/wrapper
+    - $HOME/.m2
+
 android:
   components:
-  - tools
-  - platform-tools
-  - build-tools-25
-  - android-25
-  - extra-android-m2repository
-  - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
+    - platform-tools
+    - tools
+
+    # The BuildTools version used by your project
+    - build-tools-25.0.0
+
+    # The SDK version used to compile your project
+    - android-25
+
+    # Additional components
+    - extra-google-m2repository
+    - extra-android-m2repository
+
+notifications:
+  email: true
+
+before_script:
+  - ./team-props/scripts/ci-mock-google-services-setup.sh
+
 script:
-  - ./gradlew build jacocoTestReport assembleAndroidTest
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-  - ./gradlew connectedCheck
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - ./gradlew check -PdisablePreDex --continue --stacktrace
+
